@@ -1,0 +1,20 @@
+extends base
+
+block content
+
+    main.main
+        .signup-form
+            h2.heading-secondary.ma-bt-lg Sign up to create an account
+            form.form
+                .form__group
+                    label.form__label(for='name') Name
+                    input#name.form__input(type='text', placeholder='John Smith', required)
+                    label.form__label(for='email') Email address
+                    input#email.form__input(type='email', placeholder='you@example.com', required)
+                .form__group.ma-bt-md
+                    label.form__label(for='password') Password
+                    input#password.form__input(type='password', placeholder='••••••••', required, minlength='8')
+                    label.form__label(for='password_confirm') Password Confirm
+                    input#password_confirm.form__input(type='password', placeholder='••••••••', required, minlength='8')
+                .form__group
+                    button.btn.btn--green Sign up
