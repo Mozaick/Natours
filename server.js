@@ -46,3 +46,10 @@ process.on('uncaughtException', (err) => {
   console.log(err.name, err.message);
   console.log('Uncaught Exception .. Shutting Down!!');
 });
+
+process.on('SIGTERM', () => {
+  console.log('👋 SIGTERM RECEIVED. Shutting down gracefully');
+  server.close(() => {
+    console.log('💥 Process terminated!');
+  });
+});

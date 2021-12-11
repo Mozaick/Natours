@@ -14,19 +14,16 @@ const signToken = (id) => {
   return token;
 };
 
-const cookieOptions = {
-  expires: new Date(
-    Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-  ),
-  httpOnly: true,
-};
-
-if (process.env.NODE_ENV === 'PRODUCTION') cookieOptions.secure = true;
-
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
-  res.cookie('jwt', token, cookieOptions);
+  res.cookie('jwt', token, {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+  });
 
   // Remove password from output
   user.password = undefined;
@@ -48,17 +45,14 @@ exports.singUp = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
   });
 
-
   const url = `${req.protocol}://${req.get('host')}/my`;
-
 
   await new Email(newUser, url).sendWelcome();
 
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-  
   // Read email and password
   const { email, password } = req.body;
 
@@ -73,12 +67,11 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.logout = (req, res) => {
   res.cookie('jwt', 'logged_out', {
-    
     // disappear from the browser in 10 seconds
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
@@ -87,7 +80,6 @@ exports.logout = (req, res) => {
 };
 
 exports.protect = catchAsync(async (req, res, next) => {
-  
   // 1) Getting token and check if it's there
   let token;
   if (
@@ -165,7 +157,6 @@ exports.restrictTo =
   };
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
-
   // 1) Find on DB User Based on POSTed Email
   const user = await User.findOne({ email: req.body.email });
 
@@ -244,13 +235,13 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.PasswordResetExpires = undefined;
 
   await user.save();
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
   // 1) Check user if exists
   const loggedinUser = await User.findById(req.user.id).select('+password');
-  
+
   // 2) if so check if password is correct
   if (
     !(await loggedinUser.correctPassword(
@@ -267,5 +258,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // 4) log loggedinUser in and send a jwt token
   await loggedinUser.save();
 
-  createSendToken(loggedinUser, 200, res);
+  createSendToken(loggedinUser, 200, req, res);
 });
