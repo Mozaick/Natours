@@ -8,6 +8,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors');
 
 const globlalErrorHandler = require('./controllers/errorController');
 const AppError = require('./utils/appError');
@@ -29,6 +30,12 @@ app.set('views', path.join(__dirname, 'views'));
 //////////////////////////////
 // Global Middleware
 //////////////////////////////
+// Implement CORS
+app.use(cors());
+// Access-Control-Allow-Origin *
+// api.natours.com, front-end natours.com
+app.options('*', cors());
+
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
