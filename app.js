@@ -17,6 +17,7 @@ const usersRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 
 const app = express();
 
@@ -32,10 +33,10 @@ app.set('views', path.join(__dirname, 'views'));
 //////////////////////////////
 // Implement CORS
 app.use(cors());
+
 // Access-Control-Allow-Origin *
 // api.natours.com, front-end natours.com
 app.options('*', cors());
-
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
@@ -58,6 +59,12 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 app.use(cookieParser());
+
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
 
 // Body Parser (read data from body into req.body)
 app.use(express.json({ limit: '10kb' }));

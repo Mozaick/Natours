@@ -1,8 +1,6 @@
 const express = require('express');
 const viewController = require('../controllers/viewController');
 const authControllers = require('../controllers/authController');
-const bookingControllers = require('../controllers/bookingController');
-
 
 const CSP = 'Content-Security-Policy';
 const POLICY =
@@ -14,7 +12,7 @@ const POLICY =
   "script-src https: cdn.jsdelivr.net cdnjs.cloudflare.com api.mapbox.com 'self' blob: ;" +
   "script-src-attr 'none';" +
   "style-src 'self' https: 'unsafe-inline';" +
-  "upgrade-insecure-requests;";
+  'upgrade-insecure-requests;';
 
 const router = express.Router();
 
@@ -23,19 +21,26 @@ router.use((req, res, next) => {
   next();
 });
 
-// router.use(authControllers.isLoggedIn);
+router.get('/', authControllers.isLoggedIn, viewController.getOverview);
 
-// with bookingController here And again this is here just kind of temporary
-// until we actually have our websites deployed to a server
-// where we will then be able to create a better solution
-router.get('/', bookingControllers.createBookingCheckout, authControllers.isLoggedIn, viewController.getOverview);
-
-router.get('/tour/:slug', authControllers.isLoggedIn, viewController.getTourOverview);
+router.get(
+  '/tour/:slug',
+  authControllers.isLoggedIn,
+  viewController.getTourOverview
+);
 router.get('/login', authControllers.isLoggedIn, viewController.getLoginForm);
 router.get('/signup', viewController.getSignupForm);
 router.get('/my', authControllers.protect, viewController.getAccount);
-router.get('/my-booked-tours', authControllers.protect, viewController.getMyBookedTours); // add route link into account.pug
+router.get(
+  '/my-booked-tours',
+  authControllers.protect,
+  viewController.getMyBookedTours
+);
 
-router.post('/submit-my-data', authControllers.protect, viewController.updateUserData);
+router.post(
+  '/submit-my-data',
+  authControllers.protect,
+  viewController.updateUserData
+);
 
 module.exports = router;
