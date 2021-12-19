@@ -1,5 +1,6 @@
 /* eslint-disable*/
 import '@babel/polyfill';
+import "regenerator-runtime/runtime.js";
 
 import { displayMap } from './mapbox';
 import { login, logout } from './login';
