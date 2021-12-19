@@ -8,12 +8,16 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = `Moz Elb <${process.env.EMAIL_FROM}>`;
+    this.from = `Mozes Elbarbary <${process.env.EMAIL_FROM}>`;
   }
 
   // Create Nodemailer SES Transporter
   newTransport() {
-    // when on Prod mode send real emails using AWS(SES)
+
+    // when on PROD MODE send real emails using AWS(SES)
+    // NOTE: New signed-up email addresses have to be verified
+    // first in the Amazon SES new identity configuration page
+
     if (process.env.NODE_ENV === 'production') {
       // Use SES
       return nodemailer.createTransport({
@@ -27,7 +31,7 @@ module.exports = class Email {
       });
     }
 
-    // when on Dev mode send real email using Mailtrap
+    // when on DEV MODE send real email using Mailtrap
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,

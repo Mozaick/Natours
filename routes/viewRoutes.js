@@ -21,6 +21,9 @@ router.use((req, res, next) => {
   next();
 });
 
+// display alerts on the My Bookings Page
+router.use(viewController.alert);
+
 router.get('/', authControllers.isLoggedIn, viewController.getOverview);
 
 router.get(

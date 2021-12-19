@@ -4,6 +4,15 @@ const Booking = require('../models/bookingModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
+exports.alert = (req, res, next) => {
+  const { alert } = req.query;
+  if (alert === 'booking') {
+    res.locals.alert =
+      'Your Booking is successful. A confirmation email was sent to you.. NOTE: booked tours may take up to 5 minutes to show up in your My Bookings page.';
+  }
+  next();
+};
+
 exports.getOverview = catchAsync(async (req, res, next) => {
   const tours = await Tour.find();
   res.status(200).render('overview', {
