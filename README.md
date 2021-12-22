@@ -1,4 +1,4 @@
-# Natours Application
+# Tours of Natours Application
 
 Building web applications using modern technologies: Node.js, Express, MongoDB/Mongoose and more..
 
